@@ -6,11 +6,18 @@ public class PlayerController : MonoBehaviour {
 
     private Rigidbody2D rigidbody2D;
 
-    public float speed;
+    [SerializeField]
+    private float speed;
 
-    private void Start()
-    {
+    private void Start(){
         rigidbody2D = GetComponent<Rigidbody2D>();
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision){
+        if (collision.gameObject.CompareTag("PickUp"))
+        {
+            collision.gameObject.SetActive(false);
+        }
     }
 
     void FixedUpdate () {
