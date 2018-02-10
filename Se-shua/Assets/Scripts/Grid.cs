@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Grid : MonoBehaviour {
+public class Grid : MonoBehaviour{
 
     [SerializeField]
     private Vector2 gridSize;
@@ -21,6 +21,14 @@ public class Grid : MonoBehaviour {
         gridTilesNumberX = Mathf.RoundToInt(gridSize.x / nodeDiameter);
         gridTilesNumberY = Mathf.RoundToInt(gridSize.y / nodeDiameter);
         CreateGrid();
+    }
+
+    public int MaxSize
+    {
+        get
+        {
+            return gridTilesNumberX * gridTilesNumberY;
+        }
     }
 
     private void CreateGrid()

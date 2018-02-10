@@ -24,20 +24,14 @@ public class PathfindingAStar : MonoBehaviour
         Node startNode = grid.GetNodeFromPosition(startPosition);
         Node targetNode = grid.GetNodeFromPosition(targetPosition);
 
-        List<Node> openSet = new List<Node>();
+        Heap<Node> openSet = new Heap<Node>(grid.MaxSize);
         HashSet<Node> closedSet = new HashSet<Node>();
         openSet.Add(startNode);
 
         while (openSet.Count > 0)
         {
-            Node currentNode = openSet[0];
-            for (int i = 1; i < openSet.Count; i++)
-            {
-                if(openSet[i].getTotalCost() < currentNode.getTotalCost() || (openSet[i].getTotalCost() == currentNode.getTotalCost() && openSet[i].estimatedCost < currentNode.estimatedCost)){
-                    currentNode = openSet[i];
-                }
-            }
-            openSet.Remove(currentNode);
+            Node currentNode = openSet.RemoveFirst();
+            
             closedSet.Add(currentNode);
 
             if (currentNode == targetNode)
@@ -60,6 +54,7 @@ public class PathfindingAStar : MonoBehaviour
                         if (!openSet.Contains(neighbour))
                         {
                             openSet.Add(neighbour);
+                            openSet.SortDown(neighbour);
                         }
                     }
                 }

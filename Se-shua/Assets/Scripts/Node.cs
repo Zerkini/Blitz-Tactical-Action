@@ -1,12 +1,11 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Node {
+public class Node : IHeapItem<Node> {
 
     public bool walkable;
     public Vector2 position;
-    public int currentCost, estimatedCost, gridPositionX, gridPositionY;
+    public int currentCost, estimatedCost, gridPositionX, gridPositionY, heapIndex;
     public Node parent;
 
     public Node(bool walkable, Vector2 position, int gridPositionX, int gridPositionY)
@@ -20,5 +19,27 @@ public class Node {
     public int getTotalCost()
     {
         return currentCost + estimatedCost;
+    }
+
+    public int HeapIndex
+    {
+        get
+        {
+            return heapIndex;
+        }
+        set
+        {
+            heapIndex = value;
+        }
+    }
+
+    public int CompareTo(Node nodeToCompare)
+    {
+        int compare = getTotalCost().CompareTo(nodeToCompare.getTotalCost());
+        if(compare == 0)
+        {
+            compare = estimatedCost.CompareTo(nodeToCompare.estimatedCost);
+        }
+        return -compare;
     }
 }
