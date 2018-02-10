@@ -26,4 +26,9 @@ public class PlayerController : MonoBehaviour {
         Vector2 movementVector = new Vector2(moveHorizontal, moveVertical);
         rigidbody2D.AddForce(movementVector * speed);
     }
+
+    private void OnMouseDown()
+    {
+        print("CLICKED!");
+    }
 }
