@@ -15,7 +15,7 @@ public class Grid : MonoBehaviour{
     private int gridTilesNumberX, gridTilesNumberY;
     public List<Node> path;
 
-    private void Start()
+    private void Awake()
     {
         nodeDiameter = nodeRadius * 2;
         gridTilesNumberX = Mathf.RoundToInt(gridSize.x / nodeDiameter);

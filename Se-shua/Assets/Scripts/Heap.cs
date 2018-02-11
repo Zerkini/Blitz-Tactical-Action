@@ -29,14 +29,23 @@ public class Heap<T> where T : IHeapItem<T>{
         return firstItem;
     }
 
-    private void SortUp(T item)
+    void SortUp(T item)
     {
         int parentIndex = (item.HeapIndex - 1) / 2;
-        T parentItem = items[parentIndex];
-        while (item.CompareTo(parentItem) > 0)
+
+        while (true)
         {
-            Swap(item, parentItem);
-            parentItem = items[parentIndex];
+            T parentItem = items[parentIndex];
+            if (item.CompareTo(parentItem) > 0)
+            {
+                Swap(item, parentItem);
+            }
+            else
+            {
+                break;
+            }
+
+            parentIndex = (item.HeapIndex - 1) / 2;
         }
     }
 

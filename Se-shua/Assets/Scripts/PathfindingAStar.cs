@@ -1,26 +1,31 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class PathfindingAStar : MonoBehaviour
 {
 
     private Grid grid;
-    public Transform seeker, target;
+    private PathfindingManager pathfindingManager;
 
     private void Awake()
     {
         grid = GetComponent<Grid>();
+        pathfindingManager = GetComponent<PathfindingManager>();
     }
 
-    private void Update()
+    public void StartPathfinding(Vector2 pathStart, Vector2 pathEnd)
     {
-        FindPath(seeker.position, target.position);
+        StartCoroutine(FindPath(pathStart, pathEnd));
     }
 
 
-    public void FindPath(Vector2 startPosition, Vector2 targetPosition)
+    public IEnumerator FindPath(Vector2 startPosition, Vector2 targetPosition)
     {
+        Vector2[] waypoints = new Vector2[0];
+        bool pathSuccess = false;
+
         Node startNode = grid.GetNodeFromPosition(startPosition);
         Node targetNode = grid.GetNodeFromPosition(targetPosition);
 
@@ -36,8 +41,8 @@ public class PathfindingAStar : MonoBehaviour
 
             if (currentNode == targetNode)
             {
-                RetracePath(startNode, targetNode);
-                return;
+                pathSuccess = true;
+                break;
             }
 
             foreach (Node neighbour in grid.GetNeighbours(currentNode))
@@ -60,9 +65,15 @@ public class PathfindingAStar : MonoBehaviour
                 }
             }
         }
+        yield return null;
+        if (pathSuccess)
+        {
+            waypoints = RetracePath(startNode, targetNode);
+        }
+        pathfindingManager.FinishedProcessingPath(waypoints, pathSuccess);
     }
 
-    void RetracePath(Node startNode, Node targetNode)
+    public Vector2[] RetracePath(Node startNode, Node targetNode)
     {
         List<Node> path = new List<Node>();
         Node currentNode = targetNode;
@@ -72,8 +83,27 @@ public class PathfindingAStar : MonoBehaviour
             path.Add(currentNode);
             currentNode = currentNode.parent;
         }
-        path.Reverse();
+        Vector2[] waypoints = ConvertNodePathToWaypointPath(path);
+        Array.Reverse(waypoints);
         grid.path = path;
+        return waypoints;
+    }
+
+    private Vector2[] ConvertNodePathToWaypointPath(List<Node> path)
+    {
+        List<Vector2> waypoints = new List<Vector2>();
+        Vector2 oldDirection = Vector2.zero;
+
+        for (int i = 1; i < path.Count; i++)
+        {
+            Vector2 newDirection = new Vector2(path[i - 1].gridPositionX - path[i].gridPositionX, path[i - 1].gridPositionY - path[i].gridPositionY);
+            if(newDirection != oldDirection)
+            {
+                waypoints.Add(path[i].position);
+            }
+            oldDirection = newDirection;
+        }
+        return waypoints.ToArray();
     }
 
     int GetDistance(Node startNode, Node targetNode)
