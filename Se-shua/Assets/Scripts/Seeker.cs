@@ -7,12 +7,24 @@ public class Seeker : MonoBehaviour {
     public float speed = 1;
 
     private Vector2[] path;
-    int targetIndex;
+    private int targetIndex;
+    private Vector2 targetLocation;
+    private bool moving = false;
 
-    void Start () {
-        PathfindingManager.RequestPath(transform.position, target.position, OnPathFound);
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100))
+            {
+                this.targetLocation = hit.point;
+            }
+                PathfindingManager.RequestPath(transform.position, targetLocation, OnPathFound);
+        }
+
     }
-    
+
     public void OnPathFound(Vector2[] newPath, bool pathSuccessful)
     {
         if (pathSuccessful)
@@ -26,6 +38,7 @@ public class Seeker : MonoBehaviour {
     IEnumerator FollowPath()
     {
         Vector2 currentWaypoint = path[0];
+        targetIndex = 0;
 
         while (true)
         {
@@ -34,6 +47,7 @@ public class Seeker : MonoBehaviour {
                 targetIndex++;
                 if (targetIndex >= path.Length)
                 {
+                    moving = false;
                     yield break;
                 }
                 currentWaypoint = path[targetIndex];
@@ -43,6 +57,7 @@ public class Seeker : MonoBehaviour {
             yield return null;
         }
     }
+
     public void OnDrawGizmos()
     {
         if (path != null)
