@@ -28,38 +28,40 @@ public class PathfindingAStar : MonoBehaviour
 
         Node startNode = grid.GetNodeFromPosition(startPosition);
         Node targetNode = grid.GetNodeFromPosition(targetPosition);
-
-        Heap<Node> openSet = new Heap<Node>(grid.MaxSize);
-        HashSet<Node> closedSet = new HashSet<Node>();
-        openSet.Add(startNode);
-
-        while (openSet.Count > 0)
+        if (targetNode.walkable)
         {
-            Node currentNode = openSet.RemoveFirst();
-            
-            closedSet.Add(currentNode);
+            Heap<Node> openSet = new Heap<Node>(grid.MaxSize);
+            HashSet<Node> closedSet = new HashSet<Node>();
+            openSet.Add(startNode);
 
-            if (currentNode == targetNode)
+            while (openSet.Count > 0)
             {
-                pathSuccess = true;
-                break;
-            }
+                Node currentNode = openSet.RemoveFirst();
 
-            foreach (Node neighbour in grid.GetNeighbours(currentNode))
-            {
-                if(neighbour.walkable && !closedSet.Contains(neighbour))
+                closedSet.Add(currentNode);
+
+                if (currentNode == targetNode)
                 {
-                    int newCurrentCostToNeighbour = currentNode.currentCost + GetDistance(currentNode, neighbour);
-                    if (newCurrentCostToNeighbour < neighbour.currentCost || !openSet.Contains(neighbour))
-                    {
-                        neighbour.currentCost = newCurrentCostToNeighbour;
-                        neighbour.estimatedCost = GetDistance(neighbour, targetNode);
-                        neighbour.parent = currentNode;
+                    pathSuccess = true;
+                    break;
+                }
 
-                        if (!openSet.Contains(neighbour))
+                foreach (Node neighbour in grid.GetNeighbours(currentNode))
+                {
+                    if (neighbour.walkable && !closedSet.Contains(neighbour))
+                    {
+                        int newCurrentCostToNeighbour = currentNode.currentCost + GetDistance(currentNode, neighbour);
+                        if (newCurrentCostToNeighbour < neighbour.currentCost || !openSet.Contains(neighbour))
                         {
-                            openSet.Add(neighbour);
-                            openSet.SortDown(neighbour);
+                            neighbour.currentCost = newCurrentCostToNeighbour;
+                            neighbour.estimatedCost = GetDistance(neighbour, targetNode);
+                            neighbour.parent = currentNode;
+
+                            if (!openSet.Contains(neighbour))
+                            {
+                                openSet.Add(neighbour);
+                                openSet.SortDown(neighbour);
+                            }
                         }
                     }
                 }
