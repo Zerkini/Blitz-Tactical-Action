@@ -39,7 +39,8 @@ public class Grid : MonoBehaviour{
         {
            for (int y = 0; y < gridTilesNumberY; y++)
             {
-                Vector2 newNode = bottomLeftNode + Vector2.right * (x * nodeDiameter + nodeRadius) + Vector2.up * (y * nodeDiameter + nodeRadius);
+                Vector3 newNode = bottomLeftNode + Vector2.right * (x * nodeDiameter + nodeRadius) + Vector2.up * (y * nodeDiameter + nodeRadius);
+                newNode.z = 4;
                 bool walkable = !(Physics.CheckSphere(newNode, nodeRadius));
                 grid[x, y] = new Node(walkable, newNode, x, y);
             }

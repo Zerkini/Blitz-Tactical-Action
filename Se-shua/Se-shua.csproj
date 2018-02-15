@@ -293,6 +293,7 @@
     <Compile Include="Assets\Scripts\PathFinding\PathfindingManager.cs" />
     <Compile Include="Assets\Scripts\PathFinding\Seeker.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\RayViewer.cs" />
     <Compile Include="Assets\Scripts\Rotator.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\TutorialInfo.cs" />
   </ItemGroup>

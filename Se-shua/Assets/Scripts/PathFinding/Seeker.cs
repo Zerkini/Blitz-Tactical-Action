@@ -24,7 +24,7 @@ public class Seeker : MonoBehaviour {
     private float nextFire;
     [SerializeField]
     private float fireRate = .25f, weaponRange = 20;
-    private WaitForSeconds shotDuration = new WaitForSeconds(.07f);
+    private WaitForSeconds shotDuration = new WaitForSeconds(.3f);
     private bool enemyInRange;
     #endregion
 
@@ -49,7 +49,7 @@ public class Seeker : MonoBehaviour {
         }
         if (Input.GetMouseButtonDown(1) && Time.time > nextFire)
         {
-                ShootClickedPoint();
+            ShootClickedPoint();
         }
     }
 
@@ -74,25 +74,38 @@ public class Seeker : MonoBehaviour {
             gunLine.SetPosition(1, hit.transform.position);
             StartCoroutine(ShotEffect());
         }
+        else
+        {
+            Debug.DrawRay(transform.position, enemy.transform.position, Color.green);
+        }
         
     }
 
 
     private void ShootClickedPoint()
+    {
+        nextFire = Time.time + fireRate;
+        RaycastHit hit;
+        Vector3 shotLocation;
+        Debug.Log("ShootClickedPoint");
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 200))
         {
-            nextFire = Time.time + fireRate;
-            RaycastHit hit;
-            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, weaponRange))
-            {   
-                this.targetLocation = hit.point;
+            shotLocation = hit.point;
+            shotLocation.z = 2;
+            if (Physics.Raycast(transform.position, shotLocation, out hit, 100))
+            {
+                gunLine.SetPosition(0, transform.position);
+                gunLine.SetPosition(1, shotLocation);
+                Debug.Log("hit.point: " + hit.point);
+                Debug.Log("hit.transform.position: " + shotLocation);
                 StartCoroutine(ShotEffect());
             }
-
-            if (Physics.Raycast(transform.position, targetLocation, out hit, 100)){
-                gunLine.SetPosition(0, transform.position);
-                gunLine.SetPosition(1, hit.transform.position);
+            else
+            {
+                Debug.Log("no hit" );
             }
-        }  
+        }
+    }
 
     public void OnPathFound(Vector2[] newPath, bool pathSuccessful)
     {
@@ -114,12 +127,12 @@ public class Seeker : MonoBehaviour {
 
     private IEnumerator FollowPath()
     {
-        Vector2 currentWaypoint = path[0];
+        Vector3 currentWaypoint = path[0];
         targetIndex = 0;
 
         while (true)
         {
-            if ((Vector2)transform.position == currentWaypoint)
+            if (transform.position == currentWaypoint)
             {
                 targetIndex++;
                 if (targetIndex >= path.Length)
@@ -128,9 +141,10 @@ public class Seeker : MonoBehaviour {
                     yield break;
                 }
                 currentWaypoint = path[targetIndex];
+                currentWaypoint.z = 0;
             }
 
-            transform.position = Vector2.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
             yield return null;
         }
     }
