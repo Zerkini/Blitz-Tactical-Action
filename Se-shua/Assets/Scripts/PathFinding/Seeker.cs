@@ -33,7 +33,6 @@ public class Seeker : MonoBehaviour {
         gunAudio = GetComponent<AudioSource>();
     }
 
-    //NOTE: Laser trafia dość niedokładnie względem miejsca kliknięcia, nie powinno to być ważne, ale można się zastanowić, czy sposób pobrania miejsca do trafienia poprzez raycast jest błędem
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -66,17 +65,14 @@ public class Seeker : MonoBehaviour {
     private void ShootEnemyInRange(GameObject enemy)
     {
         nextFire = Time.time + fireRate;
-        
+           
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, enemy.transform.position, out hit, weaponRange))
+        if (Physics.Raycast(transform.position, enemy.transform.position - transform.position, out hit, weaponRange))
         {
+            Vector3 shotLocation = hit.point;
             gunLine.SetPosition(0, transform.position);
-            gunLine.SetPosition(1, hit.transform.position);
+            gunLine.SetPosition(1, shotLocation);
             StartCoroutine(ShotEffect());
-        }
-        else
-        {
-            Debug.DrawRay(transform.position, enemy.transform.position, Color.green);
         }
         
     }
@@ -87,22 +83,15 @@ public class Seeker : MonoBehaviour {
         nextFire = Time.time + fireRate;
         RaycastHit hit;
         Vector3 shotLocation;
-        Debug.Log("ShootClickedPoint");
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 200))
         {
-            shotLocation = hit.point;
-            shotLocation.z = 2;
+            shotLocation = hit.point - transform.position;
+            shotLocation.z = 0;
             if (Physics.Raycast(transform.position, shotLocation, out hit, 100))
             {
                 gunLine.SetPosition(0, transform.position);
-                gunLine.SetPosition(1, shotLocation);
-                Debug.Log("hit.point: " + hit.point);
-                Debug.Log("hit.transform.position: " + shotLocation);
+                gunLine.SetPosition(1, hit.point);
                 StartCoroutine(ShotEffect());
-            }
-            else
-            {
-                Debug.Log("no hit" );
             }
         }
     }
@@ -188,3 +177,4 @@ public class Seeker : MonoBehaviour {
         }
     }
 }
+
