@@ -285,20 +285,21 @@
     <Compile Include="Assets\_Completed-Assets\Scripts\CompleteCameraController.cs" />
     <Compile Include="Assets\_Completed-Assets\Scripts\CompletePlayerController.cs" />
     <Compile Include="Assets\_Completed-Assets\Scripts\CompleteRotator.cs" />
+    <Compile Include="Assets\Scripts\Ally.cs" />
     <Compile Include="Assets\Scripts\CameraController.cs" />
+    <Compile Include="Assets\Scripts\Enemy.cs" />
     <Compile Include="Assets\Scripts\Grid.cs" />
+    <Compile Include="Assets\Scripts\PathFinding\Fighter.cs" />
     <Compile Include="Assets\Scripts\PathFinding\Heap.cs" />
     <Compile Include="Assets\Scripts\PathFinding\Node.cs" />
     <Compile Include="Assets\Scripts\PathFinding\PathfindingAStar.cs" />
     <Compile Include="Assets\Scripts\PathFinding\PathfindingManager.cs" />
-    <Compile Include="Assets\Scripts\PathFinding\Seeker.cs" />
+    <Compile Include="Assets\Scripts\PlayerAlly.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
-    <Compile Include="Assets\Scripts\RayViewer.cs" />
     <Compile Include="Assets\Scripts\Rotator.cs" />
-    <Compile Include="Assets\TutorialInfo\Scripts\TutorialInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\TutorialInfo\Fonts\LICENSE.txt" />
+    <None Include="Assets\read me.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
