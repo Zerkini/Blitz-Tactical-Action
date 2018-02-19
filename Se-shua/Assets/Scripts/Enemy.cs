@@ -8,13 +8,26 @@ public class Enemy : Fighter {
     private Transform pathfindingTarget;
     private Vector3 startingPosition;
     private bool returningToStartingPostition;
-
+    
     private void Start()
     {
+        targetTag = "Ally";
+        gunAudio = GetComponent<AudioSource>();
         this.startingPosition = transform.position;
     }
 
     private void Update()
+    {
+        Patrol();
+
+        GameObject closestAlly = GetClosestObject("Ally");
+        if (Vector3.Distance(transform.position, closestAlly.transform.position) <= weaponRange && Time.time > nextFire)
+        {
+            ShootTargetInRange(closestAlly, targetTag, weaponDamage);
+        }
+    }
+
+    private void Patrol()
     {
         if (!moving && !returningToStartingPostition)
         {
@@ -28,6 +41,5 @@ public class Enemy : Fighter {
             this.moving = true;
             PathfindingManager.RequestPath(transform.position, startingPosition, OnPathFound);
         }
-
     }
 }

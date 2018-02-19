@@ -21,8 +21,11 @@ public class Fighter: MonoBehaviour {
     protected float nextFire;
     [SerializeField]
     protected float fireRate = .25f, weaponRange = 20;
+    public float healthPoints = 100;
     protected WaitForSeconds shotDuration = new WaitForSeconds(.3f);
     protected bool enemyInRange;
+    protected string targetTag = "Enemy";
+    protected float weaponDamage = 30;
     #endregion
 
     private void Start()
@@ -94,6 +97,58 @@ public class Fighter: MonoBehaviour {
             }
         }
         return closestObject;
+    }
+
+    protected void ShootTargetInRange(GameObject target, String tag, float damage)
+    {
+        nextFire = Time.time + fireRate;
+        RaycastHit hit;
+
+        if (Physics.Raycast(transform.position, target.transform.position - transform.position, out hit, weaponRange))
+        {
+            LaserEffect(hit);
+            LaserDamage(hit, damage, tag);
+        }
+    }
+
+    protected void LaserEffect(RaycastHit hit)
+    {
+        Vector3 shotLocation = hit.point;
+        gunLine.SetPosition(0, transform.position);
+        gunLine.SetPosition(1, shotLocation);
+        StartCoroutine(ShotEffect());
+    }
+
+    protected void LaserDamage(RaycastHit hit, float damage, String tag)
+    {
+        if (hit.collider.tag.Equals(tag))
+        {
+            Fighter fighter = hit.collider.gameObject.GetComponent<Fighter>();
+            fighter.DecreaseHealthPoints(damage);
+        }
+    }
+
+    public void DecreaseHealthPoints(float damage)
+    {
+        healthPoints -= damage;
+        if (healthPoints <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        StopAllCoroutines();
+        gunLine.enabled = false;
+        foreach (var component in gameObject.GetComponents<Component>())
+        {
+            if (!(component is Transform))
+            {
+                Destroy(component);
+            }
+        }
+        Destroy(this);
     }
 
     public void OnDrawGizmos()

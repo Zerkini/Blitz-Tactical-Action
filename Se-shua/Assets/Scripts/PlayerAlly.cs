@@ -2,20 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerAlly : Fighter
-{
+public class PlayerAlly : Fighter {
+
+    private void Start()
+    {
+        gunAudio = GetComponent<AudioSource>();
+        healthPoints = 300;
+    }
 
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
             MoveToClickedPoint();
-        }
-        GameObject closestEnemy = GetClosestObject("Enemy");
-
-        if (Vector3.Distance(transform.position, closestEnemy.transform.position) <= weaponRange && Time.time > nextFire)
-        {
-            ShootEnemyInRange(closestEnemy);
         }
 
         if (Input.GetMouseButtonDown(1) && Time.time > nextFire)
@@ -34,21 +33,6 @@ public class PlayerAlly : Fighter
         PathfindingManager.RequestPath(transform.position, targetLocation, OnPathFound);
     }
 
-    private void ShootEnemyInRange(GameObject enemy)
-    {
-        nextFire = Time.time + fireRate;
-
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, enemy.transform.position - transform.position, out hit, weaponRange))
-        {
-            Vector3 shotLocation = hit.point;
-            gunLine.SetPosition(0, transform.position);
-            gunLine.SetPosition(1, shotLocation);
-            StartCoroutine(ShotEffect());
-        }
-
-    }
-
     private void ShootClickedPoint()
     {
         nextFire = Time.time + fireRate;
@@ -60,9 +44,8 @@ public class PlayerAlly : Fighter
             shotLocation.z = 0;
             if (Physics.Raycast(transform.position, shotLocation, out hit, 100))
             {
-                gunLine.SetPosition(0, transform.position);
-                gunLine.SetPosition(1, hit.point);
-                StartCoroutine(ShotEffect());
+                LaserEffect(hit);
+                LaserDamage(hit, weaponDamage, targetTag);
             }
         }
     }
