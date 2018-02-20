@@ -20,7 +20,7 @@ public class Fighter: MonoBehaviour {
     protected AudioSource gunAudio;
     protected float nextFire;
     [SerializeField]
-    protected float fireRate = .25f, weaponRange = 20;
+    protected float fireRate = .25f, weaponRange = 5, detectionRange = 10;
     public float healthPoints = 100;
     protected WaitForSeconds shotDuration = new WaitForSeconds(.3f);
     protected bool enemyInRange;

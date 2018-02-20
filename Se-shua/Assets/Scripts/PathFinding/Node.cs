@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Node : IHeapItem<Node> {
 
-    public bool walkable;
+    public bool walkable, coverUp, coverDown, coverLeft, coverRight;
     public Vector2 position;
     public int currentCost, estimatedCost, gridPositionX, gridPositionY, heapIndex;
     public Node parent;
@@ -14,6 +14,18 @@ public class Node : IHeapItem<Node> {
         this.position = position;
         this.gridPositionX = gridPositionX;
         this.gridPositionY = gridPositionY;
+    }
+
+    public Node(bool walkable, bool coverUp, bool coverDown, bool coverLeft, bool coverRight, Vector2 position, int gridPositionX, int gridPositionY)
+    {
+        this.walkable = walkable;
+        this.position = position;
+        this.gridPositionX = gridPositionX;
+        this.gridPositionY = gridPositionY;
+        this.coverDown = coverDown;
+        this.coverLeft = coverLeft;
+        this.coverRight = coverRight;
+        this.coverUp = coverUp;
     }
 
     public int getTotalCost()

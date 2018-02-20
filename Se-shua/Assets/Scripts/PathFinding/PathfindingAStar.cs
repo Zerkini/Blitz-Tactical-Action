@@ -26,8 +26,8 @@ public class PathfindingAStar : MonoBehaviour
         Vector2[] waypoints = new Vector2[0];
         bool pathSuccess = false;
 
-        Node startNode = grid.GetNodeFromPosition(startPosition);
-        Node targetNode = grid.GetNodeFromPosition(targetPosition);
+        Node startNode = Grid.GetNodeFromPosition(startPosition);
+        Node targetNode = Grid.GetNodeFromPosition(targetPosition);
         if (targetNode.walkable)
         {
             Heap<Node> openSet = new Heap<Node>(grid.MaxSize);
@@ -96,6 +96,7 @@ public class PathfindingAStar : MonoBehaviour
         List<Vector2> waypoints = new List<Vector2>();
         Vector2 oldDirection = Vector2.zero;
 
+        waypoints.Add(path[0].position);
         for (int i = 1; i < path.Count; i++)
         {
             Vector2 newDirection = new Vector2(path[i - 1].gridPositionX - path[i].gridPositionX, path[i - 1].gridPositionY - path[i].gridPositionY);
@@ -108,7 +109,7 @@ public class PathfindingAStar : MonoBehaviour
         return waypoints.ToArray();
     }
 
-    int GetDistance(Node startNode, Node targetNode)
+    public static int GetDistance(Node startNode, Node targetNode)
     {
         int DistanceX = Mathf.Abs(startNode.gridPositionX - targetNode.gridPositionX);
         int DistanceY = Mathf.Abs(startNode.gridPositionY - targetNode.gridPositionY);
