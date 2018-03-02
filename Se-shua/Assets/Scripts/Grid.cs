@@ -194,10 +194,10 @@ public class Grid : MonoBehaviour{
                 {
                     Gizmos.color = Color.red;
                 }
-                else if (node.coverRight)
-                {
-                    Gizmos.color = Color.black;
-                }
+                //else if (node.coverRight)
+                //{
+                //    Gizmos.color = Color.black;
+                //}
                 else
                 {
                     Gizmos.color = Color.green;
