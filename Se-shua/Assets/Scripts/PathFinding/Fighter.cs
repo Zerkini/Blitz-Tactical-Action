@@ -20,7 +20,7 @@ public class Fighter: MonoBehaviour {
     protected AudioSource gunAudio;
     protected float nextFire;
     [SerializeField]
-    protected float fireRate = .25f, weaponRange = 5, detectionRange = 10;
+    protected float fireRate = .25f, weaponRange = 10, detectionRange = 10;
     public float healthPoints = 100;
     protected WaitForSeconds shotDuration = new WaitForSeconds(.3f);
     protected bool enemyInRange;
@@ -75,7 +75,6 @@ public class Fighter: MonoBehaviour {
                 currentWaypoint = path[targetIndex];
                 currentWaypoint.z = 0;
             }
-
             transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
             yield return null;
         }
@@ -103,18 +102,45 @@ public class Fighter: MonoBehaviour {
     {
         nextFire = Time.time + fireRate;
         RaycastHit hit;
-
-        if (Physics.Raycast(transform.position, target.transform.position - transform.position, out hit, weaponRange))
+        Vector3 raycastStart = RandomPenetratingShot(transform.position, 0.1f);
+        Vector3 raycastDirection = DecreaseAccuracy(target.transform.position - raycastStart);
+        raycastDirection.z = 0;
+        if (Physics.Raycast(raycastStart, raycastDirection, out hit, weaponRange))
         {
             LaserEffect(hit);
             LaserDamage(hit, damage, tag);
         }
     }
 
+    protected Vector3 DecreaseAccuracy(Vector3 vector)
+    {
+        System.Random random = new System.Random();
+        float maxRandom = 1.6f;
+        float minRandom = 0.4f;
+        vector.x *=  (float)(random.NextDouble() * (maxRandom - minRandom) + minRandom);
+        vector.y *= (float)(random.NextDouble() * (maxRandom - minRandom) + minRandom);
+        return vector;
+    }
+
+    protected Vector3 RandomPenetratingShot(Vector3 vector, float chance)
+    {
+        System.Random random = new System.Random();
+        float maxRandom = 1f;
+        float minRandom = 0.0f;
+        if ((random.NextDouble() * (maxRandom - minRandom) + minRandom) > chance)
+        {
+            vector.z = -2;
+        }
+        return vector;
+    }
+
     protected void LaserEffect(RaycastHit hit)
     {
+        Vector3 shotOrigin = transform.position;
+        shotOrigin.z = -4;
         Vector3 shotLocation = hit.point;
-        gunLine.SetPosition(0, transform.position);
+        shotLocation.z = -4;
+        gunLine.SetPosition(0, shotOrigin);
         gunLine.SetPosition(1, shotLocation);
         StartCoroutine(ShotEffect());
     }

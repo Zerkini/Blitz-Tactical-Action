@@ -38,15 +38,19 @@ public class PlayerAlly : Fighter {
         nextFire = Time.time + fireRate;
         RaycastHit hit;
         Vector3 shotLocation;
+        Vector3 shotStart = transform.position;
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 200))
         {
             shotLocation = hit.point - transform.position;
             shotLocation.z = 0;
-            if (Physics.Raycast(transform.position, shotLocation, out hit, 100))
+            shotStart = RandomPenetratingShot(shotStart, 0.8f);
+            //shotLocation = DecreaseAccuracy(shotLocation);
+            if (Physics.Raycast(shotStart, shotLocation, out hit, 100))
             {
                 LaserEffect(hit);
                 LaserDamage(hit, weaponDamage, targetTag);
             }
         }
     }
+
 }

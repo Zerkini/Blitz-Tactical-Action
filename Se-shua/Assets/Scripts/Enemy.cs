@@ -6,46 +6,51 @@ public class Enemy : Fighter {
 
     [SerializeField]
     private Transform pathfindingTarget;
-    private Vector3 pathfindingTargetVector;
-    private Vector3 startingPosition;
+    private Vector2 pathfindingTargetVector;
+    private Vector2 patrolTargetVector;
+    private Vector2 startingPosition;
     private bool returningToStartingPostition;
     GameObject closestAlly;
     string direction;
     #region States
-    private bool patrolState, seekingCoverState, combatState;
+    private bool patrolState, seekingCoverState, combatState, seekingCover = false;
     #endregion
     private void Start()
     {
         targetTag = "Ally";
         gunAudio = GetComponent<AudioSource>();
         this.startingPosition = transform.position;
-        this.pathfindingTargetVector = pathfindingTarget.position;
+        this.patrolTargetVector = pathfindingTarget.position;
         SetToPatrolState();
     }
 
     private void Update()
     {
-        
         if (patrolState)
         {
-            DetectAllies();
+            DetectAlliesPatrol();
             Patrol();
         }
         else if (seekingCoverState)
         {
-            SetToCombatState();
-            seekCover();
+            if (!seekingCover)
+            {
+                seekCover();
+            }
+            if (!this.moving)
+            {
+                this.seekingCover = false;
+                SetToCombatState();
+            }
         }
         else if (combatState)
         {
             shootAllies();
+            DetectAlliesCombat();
         }
-        
-        
-        
     }
 
-    private void DetectAllies()
+    private void DetectAlliesPatrol()
     {
         closestAlly = GetClosestObject("Ally");
         if (Vector3.Distance(transform.position, closestAlly.transform.position) <= detectionRange)
@@ -54,21 +59,33 @@ public class Enemy : Fighter {
             direction = DetermineDirection(closestAlly);
         }
     }
-    
+
+    private void DetectAlliesCombat()
+    {
+        closestAlly = GetClosestObject("Ally");
+        if (Vector3.Distance(transform.position, closestAlly.transform.position) > detectionRange)
+        {
+            this.pathfindingTargetVector = pathfindingTarget.position;
+            SetToPatrolState();
+        }
+    }
+
     private void seekCover()
     {
+        this.seekingCover = true;
         direction = DetermineDirection(closestAlly);
         GoToClosetCoverWithDirection(direction);
     }
 
     private void shootAllies()
     {
-        //  UWAGA: closetAlly mógł się zmienić w trakcie przechodzenia do osłony
+        //UWAGA: closetAlly mógł się zmienić w trakcie przechodzenia do osłony
         if (Vector3.Distance(transform.position, closestAlly.transform.position) <= weaponRange && Time.time > nextFire)
         {
             ShootTargetInRange(closestAlly, targetTag, weaponDamage);
         }
     }
+   
 
     private string DetermineDirection(GameObject ally)
     {
@@ -96,6 +113,8 @@ public class Enemy : Fighter {
 
     private void GoToClosetCoverWithDirection(string direction)
     {
+        //UWAGA, nie wiem czemu gdy szuka osłony LEFT jest błąd w znajdywaniu ścieżki, target node wydaje się legitny
+        //WYGLĄDA NA TO, ZE JUZ DZIALA - na wszelki wypadek tu zostawie - poza tym to do usuniecia
         Node targetNode = Grid.GetClosestNodeWithCover(transform.position, direction);
         pathfindingTargetVector.x = targetNode.position[0];
         pathfindingTargetVector.y = targetNode.position[1];
@@ -107,15 +126,15 @@ public class Enemy : Fighter {
     {
         if (!moving && !returningToStartingPostition)
         {
-            returningToStartingPostition = true;
+            this.returningToStartingPostition = true;
             this.moving = true;
-            PathfindingManager.RequestPath(transform.position, pathfindingTargetVector, OnPathFound);
+            PathfindingManager.RequestPath(transform.position, this.patrolTargetVector, OnPathFound);
         }
         else if (!moving && returningToStartingPostition)
         {
-            returningToStartingPostition = false;
+            this.returningToStartingPostition = false;
             this.moving = true;
-            PathfindingManager.RequestPath(transform.position, startingPosition, OnPathFound);
+            PathfindingManager.RequestPath(transform.position, this.startingPosition, OnPathFound);
         }
     }
 
