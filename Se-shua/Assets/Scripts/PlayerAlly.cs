@@ -4,22 +4,34 @@ using UnityEngine;
 
 public class PlayerAlly : Fighter {
 
+    private bool selected = false;
+    private string numberTag;
+
     private void Start()
     {
         gunAudio = GetComponent<AudioSource>();
         healthPoints = 300;
+        numberTag = text.GetComponent<TextMesh>().text;
     }
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        CheckSelection();
+        if (selected)
         {
-            MoveToClickedPoint();
-        }
+            if (Input.GetMouseButtonDown(0))
+            {
+                MoveToClickedPoint();
+            }
 
-        if (Input.GetMouseButtonDown(1) && Time.time > nextFire)
+            if (Input.GetMouseButtonDown(1) && Time.time > nextFire)
+            {
+                ShootClickedPoint();
+            }
+        }
+        else
         {
-            ShootClickedPoint();
+            ShootEnemies();
         }
     }
 
@@ -53,4 +65,40 @@ public class PlayerAlly : Fighter {
         }
     }
 
+
+    private void CheckSelection()
+    {
+        if (Input.GetKeyDown(KeyCode.Keypad1) || Input.GetKeyDown(KeyCode.Alpha1)){
+            if (numberTag.Equals("1"))
+            {
+                selected = true;
+            }
+            else
+            {
+                selected = false;
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.Keypad2) || Input.GetKeyDown(KeyCode.Alpha2)){
+            if (numberTag.Equals("2"))
+            {
+                selected = true;
+            }
+            else
+            {
+                selected = false;
+            }
+        }
+    }
+
+    private void ShootEnemies()
+    {
+        GameObject closestEnemy = GetClosestObject(targetTag);
+        if (closestEnemy != null)
+        {
+            if (Vector3.Distance(transform.position, closestEnemy.transform.position) <= weaponRange && Time.time > nextFire)
+            {
+                ShootTargetInRange(closestEnemy, targetTag, weaponDamage);
+            }
+        }
+    }
 }

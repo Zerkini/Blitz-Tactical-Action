@@ -80,9 +80,12 @@ public class Enemy : Fighter {
     private void shootAllies()
     {
         //UWAGA: closetAlly mógł się zmienić w trakcie przechodzenia do osłony
-        if (Vector3.Distance(transform.position, closestAlly.transform.position) <= weaponRange && Time.time > nextFire)
+        if (closestAlly != null)
         {
-            ShootTargetInRange(closestAlly, targetTag, weaponDamage);
+            if (Vector3.Distance(transform.position, closestAlly.transform.position) <= weaponRange && Time.time > nextFire)
+            {
+                ShootTargetInRange(closestAlly, targetTag, weaponDamage);
+            }
         }
     }
    

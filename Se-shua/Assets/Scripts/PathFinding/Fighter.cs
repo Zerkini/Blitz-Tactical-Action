@@ -28,6 +28,12 @@ public class Fighter: MonoBehaviour {
     protected float weaponDamage = 30;
     #endregion
 
+    #region miscellaneousVariables
+    [SerializeField]
+    protected GameObject text;
+    #endregion
+
+
     private void Start()
     {
         gunAudio = GetComponent<AudioSource>();
@@ -174,7 +180,11 @@ public class Fighter: MonoBehaviour {
                 Destroy(component);
             }
         }
-        Destroy(this);
+        if (text != null)
+        {
+            Destroy(text);
+        }
+        Destroy(gameObject);
     }
 
     public void OnDrawGizmos()
