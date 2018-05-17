@@ -6,12 +6,15 @@ public class PlayerAlly : Fighter {
 
     private bool selected = false;
     private string numberTag;
+    [SerializeField]
+    GameObject selectionHighlight;
 
     private void Start()
     {
         gunAudio = GetComponent<AudioSource>();
         healthPoints = 300;
         numberTag = text.GetComponent<TextMesh>().text;
+        selectionHighlight.SetActive(false);
     }
 
     private void Update()
@@ -19,6 +22,7 @@ public class PlayerAlly : Fighter {
         CheckSelection();
         if (selected)
         {
+            selectionHighlight.SetActive(true);
             if (Input.GetMouseButtonDown(0))
             {
                 MoveToClickedPoint();
@@ -31,6 +35,7 @@ public class PlayerAlly : Fighter {
         }
         else
         {
+            selectionHighlight.SetActive(false);
             ShootEnemies();
         }
     }
