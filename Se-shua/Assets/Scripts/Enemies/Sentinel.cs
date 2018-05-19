@@ -67,7 +67,10 @@ public class Sentinel : Enemy {
                 SetToPatrolState();
             }
         }
-        SetToPatrolState();
+        else
+        {
+            SetToPatrolState();
+        }
     }
 
 
