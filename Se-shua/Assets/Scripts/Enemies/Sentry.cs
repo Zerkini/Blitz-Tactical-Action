@@ -53,7 +53,6 @@ public class Sentry : Enemy
         {
             if (Vector3.Distance(transform.position, closestAlly.transform.position) <= detectionRange)
             {
-                //AlarmLeadingAI(closestAlly.transform.position);
                 if (moving)
                 {
                     StopCoroutine("FollowPath");
@@ -62,6 +61,7 @@ public class Sentry : Enemy
                 alarmHighlight.SetActive(true);
                 if (!alarmCooldown)
                 {
+                    PlayerDetectedAlert(closestAlly.transform.position);
                     StartCoroutine(FiveSecondCooldown());
                 }
             }
@@ -98,6 +98,11 @@ public class Sentry : Enemy
     {
         patrolState = false;
         alarmingState = true;
+    }
+
+    private void PlayerDetectedAlert(Vector2 position)
+    {
+        DecisionTree.PlayerDetectedAlert(position);
     }
 
 }

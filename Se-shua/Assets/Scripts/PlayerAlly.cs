@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerAlly : Fighter {
 
+    [SerializeField]
     private bool selected = false;
     private string numberTag;
     [SerializeField]

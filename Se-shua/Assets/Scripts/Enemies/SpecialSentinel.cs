@@ -2,23 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Sentinel : Enemy {
+public class SpecialSentinel : Sentinel
+{
+    public bool standingBy = true;
 
-    #region States
-    protected bool patrolState, seekingCoverState, combatState, seekingCover = false;
-    #endregion
-
-    // Use this for initialization
-    new protected void Start () {
-        base.Start();
-        this.startingPosition = transform.position;
-        this.patrolTargetVector = pathfindingTarget.position;
-        SetToPatrolState();
-
+    new private void Start()
+    {
+        targetTag = "Ally";
+        gunAudio = GetComponent<AudioSource>();
     }
 
-    // Update is called once per frame
-    protected void Update () {
+    protected void Update()
+    {
         if (patrolState)
         {
             DetectAlliesPatrol();
@@ -63,7 +58,6 @@ public class Sentinel : Enemy {
         {
             if (Vector3.Distance(transform.position, closestAlly.transform.position) > detectionRange)
             {
-                this.pathfindingTargetVector = pathfindingTarget.position;
                 SetToPatrolState();
             }
         }
@@ -136,4 +130,14 @@ public class Sentinel : Enemy {
         seekingCoverState = true;
         combatState = false;
     }
+
+
+    public void moveToPosition(Vector2 repositionTargetVector, Vector2 repositionPatrolTargetVector)
+    {
+        PathfindingManager.RequestPath(transform.position, repositionTargetVector, OnPathFound);
+        this.startingPosition = repositionTargetVector;
+        this.patrolTargetVector = repositionPatrolTargetVector;
+        SetToPatrolState();
+    }
+
 }

@@ -7,10 +7,18 @@ public class Objective : MonoBehaviour {
 
     [SerializeField]
     private float protectionRange = 1;
-    private bool exposed;
-    private int guardians = 0;
+    [SerializeField]
+    public int id;
     [SerializeField]
     GameObject exposedHighlight;
+    [SerializeField]
+    public Transform reinforcementPoint, reinforcementPatrolPoint;
+    //[SerializeField]
+    //public DecisionTree decisionTree;
+    private bool exposed;
+    public bool reinforced = false;
+    private int guardians = 0;
+    
 
     private void Start () {
         exposed = false;
@@ -27,7 +35,7 @@ public class Objective : MonoBehaviour {
         if (guardians == 0)
         {
             exposed = true;
-            //AlertAI();
+            ExposedAlert();
             exposedHighlight.SetActive(false);
         }
         else
@@ -44,7 +52,6 @@ public class Objective : MonoBehaviour {
         int numberOfGuardians = objectsWithTag.Length;
         for (int i = 0; i < objectsWithTag.Length; i++)
         {
-            print(Vector3.Distance(transform.position, objectsWithTag[i].transform.position));
             if (Vector3.Distance(transform.position, objectsWithTag[i].transform.position) > protectionRange)
             {
                 numberOfGuardians--;
@@ -57,9 +64,17 @@ public class Objective : MonoBehaviour {
     {
         if (other.gameObject.CompareTag("Ally") && exposed)
         {
-            this.gameObject.SetActive(false);
             //AlertAI();
         }
     }
+
+    private void ExposedAlert()
+    {
+        if (!reinforced)
+        {
+            DecisionTree.ExposedAlert(id);
+        }
+    }
+
 
 }

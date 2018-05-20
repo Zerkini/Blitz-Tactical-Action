@@ -2,20 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Chaser : Enemy
+public class SpecialChaser : Chaser
 {
-
+    public bool standingBy = true;
     #region States
     private bool patrolState, closingState, pathfindingCooldown = false;
     #endregion
-    
+
     new private void Start()
     {
-        base.Start();
-        this.startingPosition = transform.position;
-        this.patrolTargetVector = pathfindingTarget.position;
-        SetToPatrolState();
-
+        targetTag = "Ally";
+        gunAudio = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -23,7 +20,6 @@ public class Chaser : Enemy
         if (patrolState)
         {
             DetectAlliesPatrol();
-            Patrol();
         }
         else if (closingState)
         {
@@ -66,7 +62,6 @@ public class Chaser : Enemy
         {
             if (Vector3.Distance(transform.position, closestAlly.transform.position) > detectionRange)
             {
-                this.pathfindingTargetVector = pathfindingTarget.position;
                 SetToPatrolState();
             }
         }
@@ -96,4 +91,9 @@ public class Chaser : Enemy
         closingState = true;
     }
 
+    public void moveToPosition(Vector2 repositionTargetVector)
+    {
+        PathfindingManager.RequestPath(transform.position, repositionTargetVector, OnPathFound);
+        SetToPatrolState();
+    }
 }
