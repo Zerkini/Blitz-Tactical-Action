@@ -13,8 +13,6 @@ public class Objective : MonoBehaviour {
     GameObject exposedHighlight;
     [SerializeField]
     public Transform reinforcementPoint, reinforcementPatrolPoint;
-    //[SerializeField]
-    //public DecisionTree decisionTree;
     private bool exposed;
     public bool reinforced = false;
     private int guardians = 0;
@@ -64,7 +62,8 @@ public class Objective : MonoBehaviour {
     {
         if (other.gameObject.CompareTag("Ally") && exposed)
         {
-            //AlertAI();
+            DecisionTree.ObjectiveStolenAlert(id);
+            Destroy(gameObject);
         }
     }
 

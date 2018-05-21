@@ -184,6 +184,10 @@ public class Fighter: MonoBehaviour {
         {
             Destroy(text);
         }
+        if (gameObject.tag.Equals("Ally"))
+        {
+            DecisionTree.PlayerDestroyedAlert();
+        }
         Destroy(gameObject);
     }
 

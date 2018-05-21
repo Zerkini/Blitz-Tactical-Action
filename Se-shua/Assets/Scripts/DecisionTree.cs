@@ -1,13 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DecisionTree : MonoBehaviour {
 
     private static DecisionTree instance;
 
-    private static bool playerDetectedAlarm, objectiveStolenAlarm, objectiveExposedAlarm;
-    private static int remainingObjectives, exposedObjectiveId;
+    private static bool playerDetectedAlarm, objectiveStolenAlarm, objectiveExposedAlarm, playerDestroyedAlarm, gameEnded = false;
+    private static int remainingObjectives, exposedObjectiveId, stolenObjectiveId, remainingPlayers;
     private static Vector2 detectedPlayerPosition;
 
     [SerializeField]
@@ -16,22 +18,61 @@ public class DecisionTree : MonoBehaviour {
     private SpecialSentinel specialSentinel1, specialSentinel2, specialSentinel3;
     [SerializeField]
     private Objective objective1, objective2, objective3;
-    private List<SpecialChaser> specialChasers = new List<SpecialChaser>();
-    private List<SpecialSentinel> specialSentinels = new List<SpecialSentinel>();
-    private List<Objective> objectives = new List<Objective>();
-
-
+    [SerializeField]
+    private PlayerAlly player1, player2, player3;
+    [SerializeField]
+    private GameObject gameOverText, victoryText;
+    private SpecialChaser[] specialChasersArray;
+    private SpecialSentinel[] specialSentinelsArray;
+    private Objective[] objectivesArray;
+    private PlayerAlly[] playersArray;
+    private List<SpecialChaser> specialChasers;
+    private List<SpecialSentinel> specialSentinels;
+    private List<Objective> objectives;
+    private List<PlayerAlly> players;
     private int availableSpecialChasers, availableSpecialSentinels;
 
-	private void Start () {
+    private void Start() {
+        players = new List<PlayerAlly>();
+        objectives = new List<Objective>();
+        specialChasers = new List<SpecialChaser>();
+        specialSentinels = new List<SpecialSentinel>();
+
+        playersArray = GetComponents<PlayerAlly>();
+        objectivesArray = GetComponents<Objective>();
+        specialChasersArray = GetComponents<SpecialChaser>();
+        specialSentinelsArray = GetComponents<SpecialSentinel>();
+        
+        players = playersArray.ToList();
+        objectives = objectivesArray.ToList();
+        specialChasers = specialChasersArray.ToList();
+        specialSentinels = specialSentinelsArray.ToList();
+
         CountSentinelsAndChasers();
         CountObjectives();
+        CountPlayers();
+        gameEnded = false;
         instance = this;
     }
 
     void Update()
     {
-        Decide();
+        if (!gameEnded) {
+            Decide();
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                instance.SetGameEnded(false);
+                SceneManager.LoadScene(0);
+            }
+            else if (Input.GetKeyDown(KeyCode.R))
+            {
+                instance.SetGameEnded(false);
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+        }
     }
 
     public DecisionTree GetInstance()
@@ -45,26 +86,29 @@ public class DecisionTree : MonoBehaviour {
 
     private void Decide()
     {
-        if (playerDetectedAlarm)
+        if (playerDestroyedAlarm)
         {
-            playerDetectedDecision();
+            instance.PlayerDestroyedDecision();
+            return;
+        }
+        else if (playerDetectedAlarm)
+        {
+            instance.playerDetectedDecision();
             instance.SetPlayerDetectedAlarm(false);
             return;
         }
-        //    else if (objectiveStolenAlarm)
-        //    {
-        //        ObjectiveStolenDecision();
-        //        objectiveStolenAlarm = false;
-        //        return;
-        //    }
-        //else 
-        if (objectiveExposedAlarm)
+        else if (objectiveStolenAlarm)
         {
-            ReinforcementsDecision();
+            instance.ObjectiveStolenDecision();
+            instance.SetObjectiveStolenAlarm(false);
+            return;
+        }
+        else if (objectiveExposedAlarm)
+        {
+            instance.ExposedReinforcementsDecision();
             instance.SetObjectiveExposedAlarm(false);
             return;
         }
-        return;
     }
 
     private void playerDetectedDecision()
@@ -84,22 +128,21 @@ public class DecisionTree : MonoBehaviour {
         else return;
     }
 
-    //private void ObjectiveStolenDecision()
-    //{
-    //    if (remainingObjectives > 0)
-    //    {
-    //        ReinforcementsDecision();
-    //        return;
-    //    }
-    //    else
-    //    {
-    //        //Concede();
-    //        return;
-    //    }
-    //}
+    private void ObjectiveStolenDecision()
+    {
+        if (remainingObjectives > 0)
+        {
+            StolenReinforcementsDecision();
+            return;
+        }
+        else
+        {
+            Concede();
+            return;
+        }
+    }
 
-
-    private void ReinforcementsDecision()
+    private void ExposedReinforcementsDecision()
     {
         Objective reinforcedObjective = objectives[exposedObjectiveId];
         if (availableSpecialSentinels > 0 && !reinforcedObjective.reinforced)
@@ -109,9 +152,43 @@ public class DecisionTree : MonoBehaviour {
             currentSpecialSentinel.moveToPosition(reinforcedObjective.reinforcementPoint.position, reinforcedObjective.reinforcementPatrolPoint.position);
             reinforcedObjective.reinforced = true;
             availableSpecialSentinels--;
-            return;
         }
-        else return;
+    }
+
+    private void StolenReinforcementsDecision()
+    {
+        Objective stolenObjective = objectives[stolenObjectiveId];
+        objectives.RemoveAt(stolenObjectiveId);
+        foreach (Objective objective in objectives) {
+            if (availableSpecialSentinels > 0 && !objective.reinforced)
+            {
+                SpecialSentinel currentSpecialSentinel = specialSentinels[availableSpecialSentinels - 1];
+                currentSpecialSentinel.standingBy = false;
+                currentSpecialSentinel.moveToPosition(objective.reinforcementPoint.position, objective.reinforcementPatrolPoint.position);
+                objective.reinforced = true;
+                availableSpecialSentinels--;
+            }
+        }
+    }
+
+    private void PlayerDestroyedDecision()
+    {
+        if (remainingPlayers < 1)
+        {
+            AnnounceVictory();
+        }
+        return;
+    }
+
+    private void AnnounceVictory()
+    {
+        gameOverText.SetActive(true);
+        instance.SetGameEnded(true);
+    }
+    private void Concede()
+    {
+        victoryText.SetActive(true);
+        instance.SetGameEnded(true);
     }
 
     private void CountSentinelsAndChasers()
@@ -163,6 +240,23 @@ public class DecisionTree : MonoBehaviour {
         remainingObjectives = objectives.Count;
     }
 
+    private void CountPlayers()
+    {
+        if (player1 != null)
+        {
+            players.Add(player1);
+        }
+        if (player2 != null)
+        {
+            players.Add(player2);
+        }
+        if (player3 != null)
+        {
+            players.Add(player3);
+        }
+        remainingPlayers = players.Count;
+    }
+
     public static void ExposedAlert(int objectiveId)
     {
         instance.SetObjectiveExposedAlarm(true);
@@ -173,6 +267,19 @@ public class DecisionTree : MonoBehaviour {
     {
         instance.SetPlayerDetectedAlarm(true);
         instance.SetDetectedPlayerPosition(position);
+    }
+
+    public static void ObjectiveStolenAlert(int objectiveId)
+    {
+        instance.SetObjectiveStolenAlarm(true);
+        instance.SetStolenObjectiveId(objectiveId);
+        instance.DecrementRemainingObjectives();
+    }
+
+    public static void PlayerDestroyedAlert()
+    {
+        instance.DecrementRemainingPlayers();
+        instance.SetPlayerDestroyedAlarm(true);
     }
 
     private void SetObjectiveExposedAlarm(bool alarm)
@@ -194,5 +301,32 @@ public class DecisionTree : MonoBehaviour {
         playerDetectedAlarm = alarm;
     }
 
+    private void SetObjectiveStolenAlarm(bool alarm)
+    {
+        objectiveStolenAlarm = alarm;
+    }
+
+    private void SetStolenObjectiveId(int objectiveId)
+    {
+        stolenObjectiveId = objectiveId;
+    }
+    private void DecrementRemainingObjectives()
+    {
+        remainingObjectives--;
+    }
+    private void DecrementRemainingPlayers()
+    {
+        remainingPlayers--;
+    }
+
+    private void SetPlayerDestroyedAlarm(bool alarm)
+    {
+        playerDestroyedAlarm = alarm;
+    }
+
+    private void SetGameEnded(bool end)
+    {
+        gameEnded = end;
+    }
 }
 
