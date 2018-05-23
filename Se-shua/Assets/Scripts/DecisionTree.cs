@@ -6,12 +6,14 @@ using UnityEngine.SceneManagement;
 
 public class DecisionTree : MonoBehaviour {
 
+    #region static fields
     private static DecisionTree instance;
-
     private static bool playerDetectedAlarm, objectiveStolenAlarm, objectiveExposedAlarm, playerDestroyedAlarm, gameEnded = false;
     private static int remainingObjectives, exposedObjectiveId, stolenObjectiveId, remainingPlayers;
     private static Vector2 detectedPlayerPosition;
+    #endregion
 
+    #region serialized fields
     [SerializeField]
     private SpecialChaser specialChaser1, specialChaser2, specialChaser3;
     [SerializeField]
@@ -21,15 +23,20 @@ public class DecisionTree : MonoBehaviour {
     [SerializeField]
     private PlayerAlly player1, player2, player3;
     [SerializeField]
-    private GameObject gameOverText, victoryText;
+    private GameObject gameOverText, victoryText, Unit1HP, Unit2HP, Unit3HP;
+    #endregion
+
+    #region arrays and lists
     private SpecialChaser[] specialChasersArray;
     private SpecialSentinel[] specialSentinelsArray;
     private Objective[] objectivesArray;
     private PlayerAlly[] playersArray;
+    private List<GameObject> playerHPTexts;
     private List<SpecialChaser> specialChasers;
     private List<SpecialSentinel> specialSentinels;
     private List<Objective> objectives;
     private List<PlayerAlly> players;
+    #endregion
     private int availableSpecialChasers, availableSpecialSentinels;
 
     private void Start() {
@@ -37,12 +44,13 @@ public class DecisionTree : MonoBehaviour {
         objectives = new List<Objective>();
         specialChasers = new List<SpecialChaser>();
         specialSentinels = new List<SpecialSentinel>();
+        playerHPTexts = new List<GameObject>();
 
         playersArray = GetComponents<PlayerAlly>();
         objectivesArray = GetComponents<Objective>();
         specialChasersArray = GetComponents<SpecialChaser>();
         specialSentinelsArray = GetComponents<SpecialSentinel>();
-        
+
         players = playersArray.ToList();
         objectives = objectivesArray.ToList();
         specialChasers = specialChasersArray.ToList();
@@ -51,12 +59,14 @@ public class DecisionTree : MonoBehaviour {
         CountSentinelsAndChasers();
         CountObjectives();
         CountPlayers();
+        CountHP();
         gameEnded = false;
         instance = this;
     }
 
     void Update()
     {
+        UpdateHP();
         if (!gameEnded) {
             Decide();
         }
@@ -191,6 +201,22 @@ public class DecisionTree : MonoBehaviour {
         instance.SetGameEnded(true);
     }
 
+    private void UpdateHP()
+    {
+        for (int i = 0; i < players.Count; i++)
+        {
+            if (playerHPTexts[i] != null && players[i] != null)
+            {
+                playerHPTexts[i].GetComponent<TextMesh>().text = "Unit 1: " + players[i].healthPoints;
+            }
+            else
+            {
+                playerHPTexts[i].SetActive(false);
+            }
+        }
+    }
+
+
     private void CountSentinelsAndChasers()
     {
 
@@ -255,6 +281,31 @@ public class DecisionTree : MonoBehaviour {
             players.Add(player3);
         }
         remainingPlayers = players.Count;
+    }
+    private void CountHP()
+    {
+        if (Unit1HP != null)
+        {
+            playerHPTexts.Add(Unit1HP);
+        }
+        if (players.Count > 1 && Unit2HP != null )
+        {
+            playerHPTexts.Add(Unit2HP);
+        }
+        else
+        {
+            Unit2HP.SetActive(false);
+            Unit3HP.SetActive(false);
+            return;
+        }
+        if (players.Count > 2 && Unit3HP != null)
+        {
+            playerHPTexts.Add(Unit3HP);
+        }
+        else
+        {
+            Unit3HP.SetActive(false);
+        }
     }
 
     public static void ExposedAlert(int objectiveId)

@@ -19,6 +19,8 @@ public class Sentinel : Enemy {
 
     // Update is called once per frame
     protected void Update () {
+        print(transform.position.z);
+
         if (patrolState)
         {
             DetectAlliesPatrol();
@@ -33,6 +35,7 @@ public class Sentinel : Enemy {
             if (!this.moving)
             {
                 this.seekingCover = false;
+                transform.position = new Vector3(transform.position.x, transform.position.y, 0.5f);
                 SetToCombatState();
             }
         }
@@ -64,11 +67,15 @@ public class Sentinel : Enemy {
             if (Vector3.Distance(transform.position, closestAlly.transform.position) > detectionRange)
             {
                 this.pathfindingTargetVector = pathfindingTarget.position;
+                float z = gameObject.transform.position.z;
+                transform.position = new Vector3(transform.position.x, transform.position.y, 0);
                 SetToPatrolState();
             }
         }
         else
         {
+            float z = gameObject.transform.position.z;
+            transform.position = new Vector3(transform.position.x, transform.position.y, 0);
             SetToPatrolState();
         }
     }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Enemy : Fighter {
 
+    #region variables
     [SerializeField]
     protected Transform pathfindingTarget;
     protected Vector2 pathfindingTargetVector;
@@ -12,6 +13,7 @@ public class Enemy : Fighter {
     protected bool returningToStartingPostition;
     protected GameObject closestAlly;
     protected string direction;
+    #endregion
     protected void Start()
     {
         targetTag = "Ally";

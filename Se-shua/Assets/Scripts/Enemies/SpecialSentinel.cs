@@ -28,6 +28,8 @@ public class SpecialSentinel : Sentinel
             if (!this.moving)
             {
                 this.seekingCover = false;
+                float z = gameObject.transform.position.z;
+                transform.position = new Vector3(transform.position.x, transform.position.y, 0.5f);
                 SetToCombatState();
             }
         }
@@ -58,11 +60,15 @@ public class SpecialSentinel : Sentinel
         {
             if (Vector3.Distance(transform.position, closestAlly.transform.position) > detectionRange)
             {
+                float z = gameObject.transform.position.z;
+                transform.position = new Vector3(transform.position.x, transform.position.y, 0);
                 SetToPatrolState();
             }
         }
         else
         {
+            float z = gameObject.transform.position.z;
+            transform.position = new Vector3(transform.position.x, transform.position.y, 0);
             SetToPatrolState();
         }
     }

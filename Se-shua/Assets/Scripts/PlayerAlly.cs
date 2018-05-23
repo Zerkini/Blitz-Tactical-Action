@@ -21,6 +21,7 @@ public class PlayerAlly : Fighter {
     private void Update()
     {
         CheckSelection();
+        SetCover();
         if (selected)
         {
             selectionHighlight.SetActive(true);
@@ -38,6 +39,22 @@ public class PlayerAlly : Fighter {
         {
             selectionHighlight.SetActive(false);
             ShootEnemies();
+        }
+    }
+
+    private void SetCover()
+    {
+        if (!moving)
+        {
+            Node nodePosition = Grid.GetNodeFromPosition(transform.position);
+            if ((nodePosition.coverUp || nodePosition.coverDown || nodePosition.coverLeft || nodePosition.coverRight) && transform.position.z == 0)
+            {
+                transform.position = new Vector3(transform.position.x, transform.position.y, 0.9f);
+            }
+        }
+        else if (transform.position.z != 0)
+        {
+            transform.position = new Vector3(transform.position.x, transform.position.y, 0);
         }
     }
 
@@ -61,11 +78,11 @@ public class PlayerAlly : Fighter {
         {
             shotLocation = hit.point - transform.position;
             shotLocation.z = 0;
-            shotStart = RandomPenetratingShot(shotStart, 0.8f);
+            shotStart = RandomHeightShot(shotStart);
             //shotLocation = DecreaseAccuracy(shotLocation);
             if (Physics.Raycast(shotStart, shotLocation, out hit, 100))
             {
-                LaserEffect(hit);
+                LaserEffect(hit.point);
                 LaserDamage(hit, weaponDamage, targetTag);
             }
         }

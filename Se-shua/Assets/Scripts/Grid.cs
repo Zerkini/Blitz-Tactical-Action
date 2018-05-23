@@ -70,22 +70,22 @@ public class Grid : MonoBehaviour{
         int x = node.gridPositionX;
         int y = node.gridPositionY;
 
-        if (x > 0 && grid[x - 1, y].walkable == false)
+        if (x > 0 && grid[x - 1, y].walkable == false && y > 0 && grid[x - 1, y - 1].walkable == false && y < gridTilesNumberY - 1 && grid[x - 1, y + 1].walkable == false)
         {
             node.coverLeft = true;
             nodesWithLeftCover.Add(node);
         }
-        if (x < gridTilesNumberX - 1 && grid[x + 1, y].walkable == false)
+        if (x < gridTilesNumberX - 1 && grid[x + 1, y].walkable == false && y > 0 && grid[x + 1, y - 1].walkable == false && y < gridTilesNumberY - 1 && grid[x + 1, y + 1].walkable == false)
         {
             node.coverRight = true;
             nodesWithRightCover.Add(node);
         }
-        if (y > 0 && grid[x, y - 1].walkable == false)
+        if (y > 0 && grid[x, y - 1].walkable == false && x > 0 && grid[x - 1, y - 1].walkable == false && x < gridTilesNumberX + 1 && grid[x + 1, y - 1].walkable == false)
         {
             node.coverDown = true;
             nodesWithDownCover.Add(node);
         }
-        if (y < gridTilesNumberY - 1 && grid[x, y + 1].walkable == false)
+        if (y < gridTilesNumberY - 1 && grid[x, y + 1].walkable == false && x > 0 && grid[x - 1, y + 1].walkable == false && x < gridTilesNumberX +1 && grid[x + 1, y + 1].walkable == false)
         {
             node.coverUp = true;
             nodesWithUpCover.Add(node);
@@ -131,16 +131,16 @@ public class Grid : MonoBehaviour{
 
     public static Node GetClosestNodeWithCover(Vector2 position, string direction)
     {
-        Node nodePostition = GetNodeFromPosition(position);
+        Node nodePosition = GetNodeFromPosition(position);
         Node closestNode = null;
         float shortestDistance = 100000000;
         if (direction.Equals("right"))
         {
             foreach(Node node in nodesWithRightCover)
             {
-                if (PathfindingAStar.GetDistance(nodePostition, node) < shortestDistance)
+                if (PathfindingAStar.GetDistance(nodePosition, node) < shortestDistance)
                 {
-                    shortestDistance = PathfindingAStar.GetDistance(nodePostition, node);
+                    shortestDistance = PathfindingAStar.GetDistance(nodePosition, node);
                     closestNode = node;
                 }
             }
@@ -149,9 +149,9 @@ public class Grid : MonoBehaviour{
         {
             foreach (Node node in nodesWithLeftCover)
             {
-                if (PathfindingAStar.GetDistance(nodePostition, node) < shortestDistance)
+                if (PathfindingAStar.GetDistance(nodePosition, node) < shortestDistance)
                 {
-                    shortestDistance = PathfindingAStar.GetDistance(nodePostition, node);
+                    shortestDistance = PathfindingAStar.GetDistance(nodePosition, node);
                     closestNode = node;
                 }
             }
@@ -160,9 +160,9 @@ public class Grid : MonoBehaviour{
         {
             foreach (Node node in nodesWithUpCover)
             {
-                if (PathfindingAStar.GetDistance(nodePostition, node) < shortestDistance)
+                if (PathfindingAStar.GetDistance(nodePosition, node) < shortestDistance)
                 {
-                    shortestDistance = PathfindingAStar.GetDistance(nodePostition, node);
+                    shortestDistance = PathfindingAStar.GetDistance(nodePosition, node);
                     closestNode = node;
                 }
             }
@@ -171,9 +171,9 @@ public class Grid : MonoBehaviour{
         {
             foreach (Node node in nodesWithDownCover)
             {
-                if (PathfindingAStar.GetDistance(nodePostition, node) < shortestDistance)
+                if (PathfindingAStar.GetDistance(nodePosition, node) < shortestDistance)
                 {
-                    shortestDistance = PathfindingAStar.GetDistance(nodePostition, node);
+                    shortestDistance = PathfindingAStar.GetDistance(nodePosition, node);
                     closestNode = node;
                 }
             }
@@ -187,17 +187,17 @@ public class Grid : MonoBehaviour{
 
         if (grid != null)
         {
-            Node seekerNode = GetNodeFromPosition(seeker.position);
+            //Node seekerNode = GetNodeFromPosition(seeker.position);
             foreach (Node node in grid)
             {   
                 if (!node.walkable)
                 {
                     Gizmos.color = Color.red;
                 }
-                //else if (node.coverRight)
-                //{
-                //    Gizmos.color = Color.black;
-                //}
+                else if (node.coverDown)
+                {
+                    Gizmos.color = Color.black;
+                }
                 else
                 {
                     Gizmos.color = Color.green;
@@ -209,10 +209,10 @@ public class Grid : MonoBehaviour{
                         Gizmos.color = Color.white;
                     }
                 }
-                if (seekerNode == node)
-                {
-                    Gizmos.color = Color.white;
-                }
+                //if (seekerNode == node)
+                //{
+                //    Gizmos.color = Color.white;
+                //}
                 Gizmos.DrawCube(node.position, Vector3.one * (nodeDiameter - 0.1f));
 
             }

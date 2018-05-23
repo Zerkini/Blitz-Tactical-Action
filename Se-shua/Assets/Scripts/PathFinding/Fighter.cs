@@ -79,7 +79,7 @@ public class Fighter: MonoBehaviour {
                     yield break;
                 }
                 currentWaypoint = path[targetIndex];
-                currentWaypoint.z = 0;
+                //currentWaypoint.z = 0;
             }
             transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
             yield return null;
@@ -108,13 +108,19 @@ public class Fighter: MonoBehaviour {
     {
         nextFire = Time.time + fireRate;
         RaycastHit hit;
-        Vector3 raycastStart = RandomPenetratingShot(transform.position, 0.1f);
+        Vector3 raycastStart = RandomHeightShot(transform.position);
         Vector3 raycastDirection = DecreaseAccuracy(target.transform.position - raycastStart);
         raycastDirection.z = 0;
         if (Physics.Raycast(raycastStart, raycastDirection, out hit, weaponRange))
         {
-            LaserEffect(hit);
+            LaserEffect(hit.point);
             LaserDamage(hit, damage, tag);
+        }
+        else
+        {
+            if(Physics.Raycast(raycastStart, raycastDirection, out hit, 10000)){
+                LaserEffect(hit.point);
+            }
         }
     }
 
@@ -128,23 +134,19 @@ public class Fighter: MonoBehaviour {
         return vector;
     }
 
-    protected Vector3 RandomPenetratingShot(Vector3 vector, float chance)
+    protected Vector3 RandomHeightShot(Vector3 vector)
     {
         System.Random random = new System.Random();
-        float maxRandom = 1f;
-        float minRandom = 0.0f;
-        if ((random.NextDouble() * (maxRandom - minRandom) + minRandom) > chance)
-        {
-            vector.z = -2;
-        }
+        float maxRandom = -1.05f;
+        float minRandom = -2f;
+        vector.z = (float)(random.NextDouble() * (maxRandom - minRandom) + minRandom); //strzaly ponad oslona sa na wysokosciach pomiedzy -2 i -1.05
         return vector;
     }
 
-    protected void LaserEffect(RaycastHit hit)
+    protected void LaserEffect(Vector3 shotLocation)
     {
         Vector3 shotOrigin = transform.position;
         shotOrigin.z = -4;
-        Vector3 shotLocation = hit.point;
         shotLocation.z = -4;
         gunLine.SetPosition(0, shotOrigin);
         gunLine.SetPosition(1, shotLocation);
