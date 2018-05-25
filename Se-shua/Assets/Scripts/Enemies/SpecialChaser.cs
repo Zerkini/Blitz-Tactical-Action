@@ -12,7 +12,8 @@ public class SpecialChaser : Chaser
     new private void Start()
     {
         targetTag = "Ally";
-        gunAudio = GetComponent<AudioSource>();
+        gunAudioHit = GetComponents<AudioSource>()[0];
+        gunAudioMiss = GetComponents<AudioSource>()[1];
     }
 
     void Update()
@@ -94,6 +95,8 @@ public class SpecialChaser : Chaser
     public void moveToPosition(Vector2 repositionTargetVector)
     {
         PathfindingManager.RequestPath(transform.position, repositionTargetVector, OnPathFound);
+        this.startingPosition = transform.position;
+        this.patrolTargetVector = repositionTargetVector;
         SetToPatrolState();
     }
 }

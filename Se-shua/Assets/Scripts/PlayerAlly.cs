@@ -12,10 +12,11 @@ public class PlayerAlly : Fighter {
 
     private void Start()
     {
-        gunAudio = GetComponent<AudioSource>();
+        base.Start();
         healthPoints = 300;
         numberTag = text.GetComponent<TextMesh>().text;
         selectionHighlight.SetActive(false);
+        weaponRange = 20;
     }
 
     private void Update()
@@ -79,11 +80,14 @@ public class PlayerAlly : Fighter {
             shotLocation = hit.point - transform.position;
             shotLocation.z = 0;
             shotStart = RandomHeightShot(shotStart);
-            //shotLocation = DecreaseAccuracy(shotLocation);
-            if (Physics.Raycast(shotStart, shotLocation, out hit, 100))
+            if (Physics.Raycast(shotStart, shotLocation, out hit, weaponRange))
             {
-                LaserEffect(hit.point);
+                LaserEffect(hit.point, true);
                 LaserDamage(hit, weaponDamage, targetTag);
+            }
+            else if (Physics.Raycast(shotStart, shotLocation, out hit, 10000))
+            {
+                LaserEffect(hit.point, false);
             }
         }
     }

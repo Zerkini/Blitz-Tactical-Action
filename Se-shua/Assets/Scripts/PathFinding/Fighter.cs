@@ -17,7 +17,8 @@ public class Fighter: MonoBehaviour {
     #region ShootingVariables
     [SerializeField]
     protected LineRenderer gunLine;
-    protected AudioSource gunAudio;
+    protected AudioSource gunAudioHit;
+    protected AudioSource gunAudioMiss;
     protected float nextFire;
     [SerializeField]
     protected float fireRate = .25f, weaponRange = 10, detectionRange = 10;
@@ -34,9 +35,10 @@ public class Fighter: MonoBehaviour {
     #endregion
 
 
-    private void Start()
+    protected void Start()
     {
-        gunAudio = GetComponent<AudioSource>();
+        gunAudioHit = GetComponents<AudioSource>()[0];
+        gunAudioMiss = GetComponents<AudioSource>()[1];
     }
 
     private void Update()
@@ -54,9 +56,17 @@ public class Fighter: MonoBehaviour {
         }
     }
 
-    protected IEnumerator ShotEffect()
+    protected IEnumerator ShotEffectHit()
     {
-        gunAudio.Play();
+        gunAudioHit.Play();
+        gunLine.enabled = true;
+        yield return shotDuration;
+        gunLine.enabled = false;
+    }
+
+    protected IEnumerator ShotEffectMiss()
+    {
+        gunAudioMiss.Play();
         gunLine.enabled = true;
         yield return shotDuration;
         gunLine.enabled = false;
@@ -113,14 +123,11 @@ public class Fighter: MonoBehaviour {
         raycastDirection.z = 0;
         if (Physics.Raycast(raycastStart, raycastDirection, out hit, weaponRange))
         {
-            LaserEffect(hit.point);
+            LaserEffect(hit.point, true);
             LaserDamage(hit, damage, tag);
         }
-        else
-        {
-            if(Physics.Raycast(raycastStart, raycastDirection, out hit, 10000)){
-                LaserEffect(hit.point);
-            }
+        else if(Physics.Raycast(raycastStart, raycastDirection, out hit, 10000)){
+            LaserEffect(hit.point, false);
         }
     }
 
@@ -143,14 +150,22 @@ public class Fighter: MonoBehaviour {
         return vector;
     }
 
-    protected void LaserEffect(Vector3 shotLocation)
+    protected void LaserEffect(Vector3 shotLocation, bool hit)
     {
         Vector3 shotOrigin = transform.position;
         shotOrigin.z = -4;
         shotLocation.z = -4;
         gunLine.SetPosition(0, shotOrigin);
         gunLine.SetPosition(1, shotLocation);
-        StartCoroutine(ShotEffect());
+        if (hit)
+        {
+            StartCoroutine(ShotEffectHit());
+        }
+        else
+        {
+            StartCoroutine(ShotEffectMiss());
+        }
+        
     }
 
     protected void LaserDamage(RaycastHit hit, float damage, String tag)

@@ -9,7 +9,8 @@ public class SpecialSentinel : Sentinel
     new private void Start()
     {
         targetTag = "Ally";
-        gunAudio = GetComponent<AudioSource>();
+        gunAudioHit = GetComponents<AudioSource>()[0];
+        gunAudioMiss = GetComponents<AudioSource>()[1];
     }
 
     protected void Update()

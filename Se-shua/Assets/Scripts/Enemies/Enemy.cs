@@ -14,11 +14,10 @@ public class Enemy : Fighter {
     protected GameObject closestAlly;
     protected string direction;
     #endregion
-    protected void Start()
+    new protected void Start()
     {
+        base.Start();
         targetTag = "Ally";
-        gunAudio = GetComponent<AudioSource>();
-        
     }
 
     private void Update()
