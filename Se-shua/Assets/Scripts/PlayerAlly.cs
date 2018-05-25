@@ -50,7 +50,7 @@ public class PlayerAlly : Fighter {
             Node nodePosition = Grid.GetNodeFromPosition(transform.position);
             if ((nodePosition.coverUp || nodePosition.coverDown || nodePosition.coverLeft || nodePosition.coverRight) && transform.position.z == 0)
             {
-                transform.position = new Vector3(transform.position.x, transform.position.y, 0.9f);
+                transform.position = new Vector3(transform.position.x, transform.position.y, 0.3f);
             }
         }
         else if (transform.position.z != 0)
@@ -75,7 +75,7 @@ public class PlayerAlly : Fighter {
         RaycastHit hit;
         Vector3 shotLocation;
         Vector3 shotStart = transform.position;
-        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 200))
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 10000))
         {
             shotLocation = hit.point - transform.position;
             shotLocation.z = 0;
@@ -107,6 +107,17 @@ public class PlayerAlly : Fighter {
         }
         else if (Input.GetKeyDown(KeyCode.Keypad2) || Input.GetKeyDown(KeyCode.Alpha2)){
             if (numberTag.Equals("2"))
+            {
+                selected = true;
+            }
+            else
+            {
+                selected = false;
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.Keypad3) || Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            if (numberTag.Equals("3"))
             {
                 selected = true;
             }

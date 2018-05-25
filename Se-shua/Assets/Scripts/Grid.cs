@@ -5,11 +5,13 @@ using UnityEngine;
 public class Grid : MonoBehaviour{
 
     [SerializeField]
-    private static Vector2 gridSize = new Vector2(32, 32);
+    private static int gridX = 140, gridY = 140;
+    private static Vector2 gridSize = new Vector2(gridX, gridY);
+
     [SerializeField]
     private static float nodeRadius = 0.3f;
 
-    public Transform seeker, target;
+    //public Transform seeker, target;
     private static Node[,] grid;
     private float nodeDiameter;
     private static int gridTilesNumberX, gridTilesNumberY;
@@ -189,7 +191,7 @@ public class Grid : MonoBehaviour{
         {
             //Node seekerNode = GetNodeFromPosition(seeker.position);
             foreach (Node node in grid)
-            {   
+            {
                 if (!node.walkable)
                 {
                     Gizmos.color = Color.red;

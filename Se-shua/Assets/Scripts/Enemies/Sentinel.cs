@@ -19,8 +19,6 @@ public class Sentinel : Enemy {
 
     // Update is called once per frame
     protected void Update () {
-        print(transform.position.z);
-
         if (patrolState)
         {
             DetectAlliesPatrol();
