@@ -48,7 +48,8 @@ public class Chaser : Enemy
     {
         if (closestAlly != null)
         {
-            if ((Vector3.Distance(transform.position, closestAlly.transform.position) <= detectionRange))
+            float distance = Vector3.Distance(transform.position, closestAlly.transform.position);
+            if (2 < distance && distance <= detectionRange)
             {
                 if (!pathfindingCooldown)
                 {
