@@ -9,14 +9,16 @@ public class PlayerAlly : Fighter {
     private string numberTag;
     [SerializeField]
     GameObject selectionHighlight;
+    [SerializeField]
+    private float selectedFireRate;
 
     private void Start()
     {
         base.Start();
-        healthPoints = 300;
+        //healthPoints = 300;
         numberTag = text.GetComponent<TextMesh>().text;
         selectionHighlight.SetActive(false);
-        weaponRange = 20;
+        //weaponRange = 20;
     }
 
     private void Update()
@@ -30,7 +32,6 @@ public class PlayerAlly : Fighter {
             {
                 MoveToClickedPoint();
             }
-
             if (Input.GetMouseButtonDown(1) && Time.time > nextFire)
             {
                 ShootClickedPoint();
@@ -71,7 +72,7 @@ public class PlayerAlly : Fighter {
 
     private void ShootClickedPoint()
     {
-        nextFire = Time.time + fireRate;
+        nextFire = Time.time + selectedFireRate;
         RaycastHit hit;
         Vector3 shotLocation;
         Vector3 shotStart = transform.position;

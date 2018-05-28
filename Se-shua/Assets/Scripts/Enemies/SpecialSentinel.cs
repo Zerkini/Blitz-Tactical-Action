@@ -15,7 +15,6 @@ public class SpecialSentinel : Sentinel
 
     protected void Update()
     {
-        print(transform.position.z);
         if (patrolState)
         {
             DetectAlliesPatrol();

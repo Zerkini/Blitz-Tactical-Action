@@ -97,8 +97,9 @@ public class DecisionTree : MonoBehaviour {
     private void Decide()
     {
         if (playerDestroyedAlarm)
-        {
+        {   
             instance.PlayerDestroyedDecision();
+            instance.SetPlayerDestroyedAlarm(false);
             return;
         }
         else if (playerDetectedAlarm)
