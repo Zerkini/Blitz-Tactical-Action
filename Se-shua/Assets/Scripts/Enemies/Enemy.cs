@@ -18,6 +18,7 @@ public class Enemy : Fighter {
     {
         base.Start();
         targetTag = "Ally";
+        weaponDamage = 25;
     }
 
     private void Update()

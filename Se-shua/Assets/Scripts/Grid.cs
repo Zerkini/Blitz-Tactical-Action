@@ -82,12 +82,12 @@ public class Grid : MonoBehaviour{
             node.coverRight = true;
             nodesWithRightCover.Add(node);
         }
-        if (y > 0 && grid[x, y - 1].walkable == false && x > 0 && grid[x - 1, y - 1].walkable == false && x < gridTilesNumberX + 1 && grid[x + 1, y - 1].walkable == false)
+        if (y > 0 && grid[x, y - 1].walkable == false && x > 0 && grid[x - 1, y - 1].walkable == false && x < gridTilesNumberX - 1 && grid[x + 1, y - 1].walkable == false)
         {
             node.coverDown = true;
             nodesWithDownCover.Add(node);
         }
-        if (y < gridTilesNumberY - 1 && grid[x, y + 1].walkable == false && x > 0 && grid[x - 1, y + 1].walkable == false && x < gridTilesNumberX +1 && grid[x + 1, y + 1].walkable == false)
+        if (y < gridTilesNumberY - 1 && grid[x, y + 1].walkable == false && x > 0 && grid[x - 1, y + 1].walkable == false && x < gridTilesNumberX - 1 && grid[x + 1, y + 1].walkable == false)
         {
             node.coverUp = true;
             nodesWithUpCover.Add(node);

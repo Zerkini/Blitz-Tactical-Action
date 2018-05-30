@@ -12,13 +12,11 @@ public class PlayerAlly : Fighter {
     [SerializeField]
     private float selectedFireRate;
 
-    private void Start()
+    new private void Start()
     {
         base.Start();
-        //healthPoints = 300;
         numberTag = text.GetComponent<TextMesh>().text;
         selectionHighlight.SetActive(false);
-        //weaponRange = 20;
     }
 
     private void Update()
@@ -67,7 +65,10 @@ public class PlayerAlly : Fighter {
         {
             this.targetLocation = hit.point;
         }
-        PathfindingManager.RequestPath(transform.position, targetLocation, OnPathFound);
+        if (Vector3.Distance(transform.position, targetLocation) > 0.5)
+        {
+            PathfindingManager.RequestPath(transform.position, targetLocation, OnPathFound);
+        }
     }
 
     private void ShootClickedPoint()

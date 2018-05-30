@@ -169,9 +169,8 @@ public class DecisionTree : MonoBehaviour {
     private void StolenReinforcementsDecision()
     {
         Objective stolenObjective = objectives[stolenObjectiveId];
-        objectives.RemoveAt(stolenObjectiveId);
         foreach (Objective objective in objectives) {
-            if (availableSpecialSentinels > 0 && !objective.reinforced)
+            if (availableSpecialSentinels > 0 && !objective.reinforced && !objective.stolen)
             {
                 SpecialSentinel currentSpecialSentinel = specialSentinels[availableSpecialSentinels - 1];
                 currentSpecialSentinel.standingBy = false;

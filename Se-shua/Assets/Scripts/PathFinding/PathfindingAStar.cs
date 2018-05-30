@@ -95,8 +95,9 @@ public class PathfindingAStar : MonoBehaviour
     {
         List<Vector2> waypoints = new List<Vector2>();
         Vector2 oldDirection = Vector2.zero;
-
-        waypoints.Add(path[0].position);
+        if (path.Count > 0) { 
+            waypoints.Add(path[0].position);
+        }
         for (int i = 1; i < path.Count; i++)
         {
             Vector2 newDirection = new Vector2(path[i - 1].gridPositionX - path[i].gridPositionX, path[i - 1].gridPositionY - path[i].gridPositionY);

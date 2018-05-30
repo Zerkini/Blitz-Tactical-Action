@@ -11,6 +11,7 @@ public class SpecialSentinel : Sentinel
         targetTag = "Ally";
         gunAudioHit = GetComponents<AudioSource>()[0];
         gunAudioMiss = GetComponents<AudioSource>()[1];
+        weaponDamage = 25;
     }
 
     protected void Update()

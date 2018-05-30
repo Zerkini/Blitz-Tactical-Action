@@ -14,6 +14,7 @@ public class SpecialChaser : Chaser
         targetTag = "Ally";
         gunAudioHit = GetComponents<AudioSource>()[0];
         gunAudioMiss = GetComponents<AudioSource>()[1];
+        weaponDamage = 25;
     }
 
     void Update()

@@ -21,12 +21,11 @@ public class Fighter: MonoBehaviour {
     protected AudioSource gunAudioMiss;
     protected float nextFire;
     [SerializeField]
-    protected float fireRate = .25f, weaponRange = 10, detectionRange = 10;
+    protected float fireRate = .25f, weaponRange = 10, detectionRange = 10, weaponDamage = 30;
     public float healthPoints = 100;
     protected WaitForSeconds shotDuration = new WaitForSeconds(.3f);
     protected bool enemyInRange;
     protected string targetTag = "Enemy";
-    protected float weaponDamage = 30;
     #endregion
 
     #region miscellaneousVariables
@@ -74,7 +73,15 @@ public class Fighter: MonoBehaviour {
 
     protected IEnumerator FollowPath()
     {
-        Vector3 currentWaypoint = path[0];
+        Vector3 currentWaypoint = new Vector3();
+        if (path.Length > 0)
+        {
+            currentWaypoint = path[0];
+        }
+        else
+        {
+            yield return null;
+        }
         targetIndex = 0;
         this.moving = true;
 
