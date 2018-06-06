@@ -212,6 +212,10 @@ public class Fighter: MonoBehaviour {
         {
             DecisionTree.PlayerDestroyedAlert();
         }
+        else
+        {
+            DecisionTree.EnemyDestroyedAlert();
+        }
         Destroy(gameObject);
     }
 

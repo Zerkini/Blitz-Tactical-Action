@@ -8,8 +8,8 @@ public class DecisionTree : MonoBehaviour {
 
     #region static fields
     private static DecisionTree instance;
-    private static bool playerDetectedAlarm, objectiveStolenAlarm, objectiveExposedAlarm, playerDestroyedAlarm, gameEnded = false;
-    private static int remainingObjectives, exposedObjectiveId, stolenObjectiveId, remainingPlayers;
+    private static bool playerDetectedAlarm, objectiveStolenAlarm, objectiveExposedAlarm, playerDestroyedAlarm, gameEnded = false, playerWon;
+    private static int remainingObjectives, exposedObjectiveId, stolenObjectiveId, remainingPlayers, remainingEnemies, playerScoreForObjectives = 0, AIScoreForObjectives = 150;
     private static Vector2 detectedPlayerPosition;
     #endregion
 
@@ -24,6 +24,8 @@ public class DecisionTree : MonoBehaviour {
     private PlayerAlly player1, player2, player3;
     [SerializeField]
     private GameObject gameOverText, victoryText, Unit1HP, Unit2HP, Unit3HP;
+    [SerializeField]
+    private int startingEnemiesNumber;
     #endregion
 
     #region arrays and lists
@@ -60,6 +62,9 @@ public class DecisionTree : MonoBehaviour {
         CountObjectives();
         CountPlayers();
         CountHP();
+        remainingEnemies = startingEnemiesNumber;
+
+
         gameEnded = false;
         instance = this;
     }
@@ -75,13 +80,13 @@ public class DecisionTree : MonoBehaviour {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 instance.SetGameEnded(false);
-                SceneManager.LoadScene(0);
+                Application.Quit();
             }
-            else if (Input.GetKeyDown(KeyCode.R))
-            {
-                instance.SetGameEnded(false);
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-            }
+            //else if (Input.GetKeyDown(KeyCode.R))
+            //{
+            //    instance.SetGameEnded(false);
+            //    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            //}
         }
     }
 
@@ -141,6 +146,14 @@ public class DecisionTree : MonoBehaviour {
 
     private void ObjectiveStolenDecision()
     {
+        int playerRewardForStealingObjective = 50;
+        for (int i = 1; i < remainingPlayers; i++)
+        {
+            playerRewardForStealingObjective += 15;
+        }
+        instance.IncreasePlayerScoreForObjectives(playerRewardForStealingObjective);
+        instance.DecreaseAIScoreForObjectives(50);
+
         if (remainingObjectives > 0)
         {
             StolenReinforcementsDecision();
@@ -192,11 +205,15 @@ public class DecisionTree : MonoBehaviour {
 
     private void AnnounceVictory()
     {
+        instance.SetPlayerWon(false);
+        gameOverText.GetComponent<TextMesh>().text = DisplayScores(gameOverText.GetComponent<TextMesh>().text);
         gameOverText.SetActive(true);
         instance.SetGameEnded(true);
     }
     private void Concede()
     {
+        instance.SetPlayerWon(true);
+        victoryText.GetComponent<TextMesh>().text = DisplayScores(victoryText.GetComponent<TextMesh>().text);
         victoryText.SetActive(true);
         instance.SetGameEnded(true);
     }
@@ -216,6 +233,35 @@ public class DecisionTree : MonoBehaviour {
         }
     }
 
+    private string DisplayScores(string text)
+    {
+        int playerScore = calculatePlayerScore(), AIScore = calculateAIScore();
+        string finalString = text;
+        finalString = finalString + "Your score: " + playerScore + "\n Enemy score: " + AIScore + "\n\n Escape - exit game";
+        return finalString;
+    }
+    
+    private int calculatePlayerScore()
+    {
+        int score = instance.GetPlayerScoreForObjectives();
+        if (instance.GetPlayerWon())
+        {
+            score += 60;
+        }
+        return score;
+    }
+
+    private int calculateAIScore()
+    {
+        int score = instance.GetAIScoreForObjectives();
+        if (!instance.GetPlayerWon())
+        {
+            score += 60;
+        }
+        double percentage = ((double)remainingEnemies / startingEnemiesNumber) * 90;
+        score += (int)percentage;
+        return score;
+    }
 
     private void CountSentinelsAndChasers()
     {
@@ -333,6 +379,11 @@ public class DecisionTree : MonoBehaviour {
         instance.SetPlayerDestroyedAlarm(true);
     }
 
+    public static void EnemyDestroyedAlert()
+    {
+        instance.DecrementRemainingEnemies();
+    }
+
     private void SetObjectiveExposedAlarm(bool alarm)
     {
         objectiveExposedAlarm = alarm;
@@ -361,13 +412,20 @@ public class DecisionTree : MonoBehaviour {
     {
         stolenObjectiveId = objectiveId;
     }
+
     private void DecrementRemainingObjectives()
     {
         remainingObjectives--;
     }
+
     private void DecrementRemainingPlayers()
     {
         remainingPlayers--;
+    }
+
+    private void DecrementRemainingEnemies()
+    {
+        remainingEnemies--;
     }
 
     private void SetPlayerDestroyedAlarm(bool alarm)
@@ -378,6 +436,36 @@ public class DecisionTree : MonoBehaviour {
     private void SetGameEnded(bool end)
     {
         gameEnded = end;
+    }
+
+    private void SetPlayerWon(bool won)
+    {
+        playerWon = won;
+    }
+
+    private bool GetPlayerWon()
+    {
+        return playerWon;
+    }
+
+    private void IncreasePlayerScoreForObjectives (int amount)
+    {
+        playerScoreForObjectives += amount;
+    }
+
+    private void DecreaseAIScoreForObjectives(int amount)
+    {
+        AIScoreForObjectives -= amount;
+    }
+
+    private int GetPlayerScoreForObjectives()
+    {
+        return playerScoreForObjectives;
+    }
+
+    private int GetAIScoreForObjectives()
+    {
+        return AIScoreForObjectives;
     }
 }
 
