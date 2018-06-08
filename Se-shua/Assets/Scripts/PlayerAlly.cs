@@ -26,11 +26,11 @@ public class PlayerAlly : Fighter {
         if (selected)
         {
             selectionHighlight.SetActive(true);
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(1))
             {
                 MoveToClickedPoint();
             }
-            if (Input.GetMouseButtonDown(1) && Time.time > nextFire)
+            if (Input.GetMouseButtonDown(0) && Time.time > nextFire)
             {
                 ShootClickedPoint();
             }

@@ -224,7 +224,7 @@ public class DecisionTree : MonoBehaviour {
         {
             if (playerHPTexts[i] != null && players[i] != null)
             {
-                playerHPTexts[i].GetComponent<TextMesh>().text = "Unit 1: " + players[i].healthPoints;
+                playerHPTexts[i].GetComponent<TextMesh>().text = "Unit " + (i+1) + ": " + players[i].healthPoints;
             }
             else
             {
