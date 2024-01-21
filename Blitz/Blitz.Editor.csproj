@@ -282,9 +282,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Se-shua.csproj">
+    <ProjectReference Include="Blitz.csproj">
       <Project>{09AC0F9B-320A-D945-0D96-CCA12943949A}</Project>
-      <Name>Se-shua</Name>
+      <Name>Blitz</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
